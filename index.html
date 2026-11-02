@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BOSS BATTLE SQL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+
+<!-- ================= TELA INICIAL ================= -->
+<main id="screen-title" class="screen active">
+  <div class="title-layout">
+    <section class="title-main">
+      <h1 class="logo"><span class="l1">BOSS BATTLE</span><span class="l2">SQL</span></h1>
+      <p class="tagline">Arena de combate: derrote os robôs, responda aos desafios e enfrente o BUG-404.</p>
+      <p class="topic">Segurança e Desempenho em SQL: GRANT, REVOKE, CREATE INDEX e DROP INDEX</p>
+      <div class="menu">
+        <button id="btn-play" class="btn btn-primary">JOGAR (PARTIDA OFICIAL)</button>
+        <button id="btn-training" class="btn">MODO TREINO</button>
+        <button id="btn-ranking" class="btn">RANKING COMPLETO</button>
+        <button id="btn-help" class="btn">COMO JOGAR</button>
+        <button class="btn btn-small mute-btn" type="button">SOM: LIGADO</button>
+      </div>
+      <p class="fine">Projeto escolar SENAI · Desenvolvimento de Sistemas · Grupo 3</p>
+    </section>
+
+    <aside class="panel rank-panel">
+      <div class="panel-head">
+        <h2>TOP 10</h2>
+        <button id="btn-title-refresh" class="btn btn-small" type="button">ATUALIZAR</button>
+      </div>
+      <p id="title-rank-status" class="status">Carregando ranking...</p>
+      <table class="rank-table" aria-label="Ranking dos 10 melhores">
+        <thead><tr><th>#</th><th>Jogador</th><th>Pontos</th><th>Acertos</th><th>Tempo</th></tr></thead>
+        <tbody id="title-rank-body"></tbody>
+      </table>
+    </aside>
+  </div>
+</main>
+
+<!-- ================= ENTRADA (PARTIDA OFICIAL) ================= -->
+<main id="screen-login" class="screen">
+  <div class="panel login-card">
+    <h2>PARTIDA OFICIAL</h2>
+    <p class="muted">Cada aluno tem uma única tentativa. Use o código individual que o professor entregou.</p>
+    <label for="in-nick">Nome de jogador (2 a 20 caracteres)</label>
+    <input id="in-nick" type="text" maxlength="20" autocomplete="off" placeholder="Ex.: Ana S.">
+    <label for="in-code">Código individual</label>
+    <input id="in-code" type="text" maxlength="12" autocomplete="off" placeholder="XXXX-XXXX">
+    <label class="check"><input id="chk-understand" type="checkbox"> Entendi: ao clicar em iniciar, minha única tentativa é usada e o relógio de 10 minutos começa.</label>
+    <p id="login-msg" class="msg" role="alert"></p>
+    <div class="row">
+      <button id="btn-start-official" class="btn btn-primary" type="button">INICIAR PARTIDA</button>
+      <button id="btn-login-back" class="btn" type="button">VOLTAR</button>
+    </div>
+  </div>
+</main>
+
+<!-- ================= RANKING ================= -->
+<main id="screen-rank" class="screen">
+  <div class="panel rank-full">
+    <div class="panel-head">
+      <h2>RANKING</h2>
+      <button id="btn-rank-refresh" class="btn btn-small" type="button">ATUALIZAR</button>
+    </div>
+    <div id="my-pos-box" class="mypos" hidden></div>
+    <p id="rank-status" class="status">Carregando ranking...</p>
+    <table class="rank-table" aria-label="Ranking">
+      <thead><tr><th>#</th><th>Jogador</th><th>Pontos</th><th>Acertos</th><th>Tempo</th></tr></thead>
+      <tbody id="rank-body"></tbody>
+    </table>
+    <p class="fine">Desempate: mais pontos, depois mais acertos, depois menor tempo.</p>
+    <button id="btn-rank-back" class="btn" type="button">VOLTAR</button>
+  </div>
+</main>
+
+<!-- ================= COMO JOGAR ================= -->
+<main id="screen-help" class="screen">
+  <div class="panel help-card">
+    <h2>COMO JOGAR</h2>
+    <div class="help-cols">
+      <div>
+        <h3>Controles</h3>
+        <ul>
+          <li><b>W A S D</b> ou <b>setas</b>: andar</li>
+          <li><b>Espaço</b>: atacar os robôs próximos</li>
+          <li><b>E</b>: abrir um desafio SQL perto de um terminal</li>
+          <li><b>ESC</b>: pausar (o relógio oficial continua)</li>
+        </ul>
+        <h3>Objetivo</h3>
+        <ul>
+          <li>Responda a <b>6 desafios</b> para invocar o chefe <b>BUG-404</b>.</li>
+          <li>Derrote o chefe em até <b>10 minutos</b> sem ficar sem vida.</li>
+          <li>Cada terminal tem 2 desafios. Cada pergunta vale uma vez.</li>
+        </ul>
+        <h3>Pontos</h3>
+        <ul>
+          <li>Resposta correta: <b>+100</b></li>
+          <li>Robô derrotado: <b>+50</b> (até 40 robôs contam)</li>
+          <li>BUG-404 derrotado: <b>+300</b></li>
+          <li>Bônus de tempo na vitória: até <b>+100</b></li>
+          <li>Resposta errada: 0 ponto, <b>-20 de vida</b> e ataque especial inimigo</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Terminais e poderes</h3>
+        <ul class="cmd-list">
+          <li><i style="background:#38bdf8"></i><span><b>GRANT</b>: drone aliado que ataca os robôs.</span></li>
+          <li><i style="background:#ff3b6b"></i><span><b>REVOKE</b>: remove os escudos de acesso e deixa os inimigos vulneráveis.</span></li>
+          <li><i style="background:#a855f7"></i><span><b>CREATE INDEX</b>: bônus de velocidade e ataque.</span></li>
+          <li><i style="background:#fbbf24"></i><span><b>DROP INDEX</b>: remove os bônus dos inimigos e a fúria do chefe.</span></li>
+        </ul>
+        <p class="fine">Robô com anel roxo = recebeu acesso (escudo). Robô com aura vermelha = turbinado por índice. Esses efeitos são metáforas do jogo, não o comportamento literal dos comandos SQL.</p>
+        <h3>Regras da partida oficial</h3>
+        <ul>
+          <li>Uma única tentativa por aluno, controlada pelo servidor.</li>
+          <li>O tempo não para durante perguntas ou pausa.</li>
+          <li>Se fechar o navegador, a tentativa continua valendo.</li>
+          <li>Falha técnica: avise o professor.</li>
+        </ul>
+      </div>
+    </div>
+    <button id="btn-help-back" class="btn" type="button">VOLTAR</button>
+  </div>
+</main>
+
+<!-- ================= JOGO ================= -->
+<main id="screen-game" class="screen">
+  <div id="stage" class="stage">
+    <canvas id="game-canvas"></canvas>
+
+    <div class="hud">
+      <div class="hud-block hud-left">
+        <span class="hud-label">VIDA</span>
+        <div class="bar hp"><i id="hp-fill"></i></div>
+        <b id="hp-text">100</b>
+      </div>
+      <div class="hud-block hud-center">
+        <div id="phase-label" class="phase">FASE 1 · LIMPEZA DA ARENA</div>
+        <div id="timer" class="timer">10:00</div>
+      </div>
+      <div class="hud-block hud-right">
+        <div class="score-line"><span class="hud-label">PONTOS</span> <b id="score">0</b></div>
+        <div id="chips" class="chips"></div>
+        <button class="mute-btn hud-mute" type="button">SOM</button>
+      </div>
+    </div>
+
+    <div id="boss-bar" class="boss-bar" hidden>
+      <span>BUG-404</span>
+      <div class="bar boss"><i id="boss-fill"></i><u id="boss-shield"></u></div>
+    </div>
+
+    <div class="objective-bar"><span id="objective"></span><span id="mode-tag" class="mode-tag" hidden>TREINO · NÃO VALE RANKING</span></div>
+
+    <!-- janela de pergunta -->
+    <div id="qmodal" class="overlay" hidden>
+      <div class="qcard" id="qcard">
+        <div class="qhead"><span id="q-cmd" class="qtag">GRANT</span><span id="q-counter" class="qcount"></span></div>
+        <h3 id="q-prompt"></h3>
+        <div id="q-options" class="qoptions"></div>
+        <div id="q-feedback" class="qfeedback" hidden>
+          <b id="q-verdict"></b>
+          <p id="q-explain"></p>
+          <p id="q-effect" class="qeffect"></p>
+        </div>
+        <p id="q-msg" class="msg"></p>
+        <div class="row">
+          <button id="q-confirm" class="btn btn-primary" type="button" disabled>CONFIRMAR</button>
+          <button id="q-continue" class="btn btn-primary" type="button" hidden>CONTINUAR</button>
+        </div>
+        <p class="fine">Atalhos: 1, 2 e 3 escolhem a alternativa; Enter confirma.</p>
+      </div>
+    </div>
+
+    <!-- pausa -->
+    <div id="pause" class="overlay" hidden>
+      <div class="qcard small">
+        <h3>PAUSADO</h3>
+        <p>O combate está parado, mas o relógio oficial continua correndo.</p>
+        <button id="btn-resume" class="btn btn-primary" type="button">CONTINUAR</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= RESULTADO ================= -->
+<main id="screen-result" class="screen">
+  <div class="panel result-card">
+    <h2 id="res-title">RESULTADO</h2>
+    <p id="res-sub" class="muted"></p>
+    <p id="res-status" class="status"></p>
+    <div id="res-body" hidden>
+      <div class="res-score"><span>PONTUAÇÃO FINAL</span><b id="res-score">0</b></div>
+      <div class="res-grid">
+        <div><span>Acertos</span><b id="res-correct">0</b></div>
+        <div><span>Erros</span><b id="res-wrong">0</b></div>
+        <div><span>Robôs derrotados</span><b id="res-kills">0</b></div>
+        <div><span>BUG-404</span><b id="res-boss">não</b></div>
+        <div><span>Tempo de partida</span><b id="res-time">0:00</b></div>
+        <div><span>Posição no ranking</span><b id="res-pos">-</b></div>
+      </div>
+    </div>
+    <div class="row">
+      <button id="btn-res-retry" class="btn btn-primary" type="button" hidden>TENTAR ENVIAR DE NOVO</button>
+      <button id="btn-res-rank" class="btn" type="button">VER RANKING</button>
+      <button id="btn-res-home" class="btn" type="button">TELA INICIAL</button>
+    </div>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="supabase.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
